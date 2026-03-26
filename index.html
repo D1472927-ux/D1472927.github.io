@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨ 神秘運勢占卜 ✨</title>
+  <meta name="description" content="探索你的命運！透過神秘占卜，揭開你在工作、愛情、學業、財運等方面的運勢。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 星空粒子背景 -->
+  <canvas id="starsCanvas"></canvas>
+
+  <div class="container">
+
+    <!-- ===== 首頁區塊 ===== -->
+    <section id="home-section">
+      <div class="crystal-ball">🔮</div>
+      <h1 class="title">神秘運勢占卜</h1>
+      <p class="subtitle">讓宇宙的星辰為你指引方向</p>
+      <p class="intro">
+        點擊下方水晶球，揭曉你今日的命運密碼。<br>
+        涵蓋 💼 工作、📚 學業、❤️ 愛情、💰 金錢 四大面向。
+      </p>
+
+      <button id="divine-btn" class="btn-divine" aria-label="開始占卜">
+        <span class="btn-icon">🔮</span>
+        <span class="btn-text">開始占卜</span>
+      </button>
+
+      <!-- 占卜動畫區 -->
+      <div id="divining-animation" class="divining-animation hidden">
+        <div class="magic-circle">
+          <div class="ring ring-1"></div>
+          <div class="ring ring-2"></div>
+          <div class="ring ring-3"></div>
+          <div class="center-orb">✦</div>
+        </div>
+        <p class="divining-text">星辰正在排列中…</p>
+      </div>
+    </section>
+
+    <!-- ===== 結果區塊 ===== -->
+    <section id="result-section" class="hidden">
+      <div class="result-card">
+        <div class="result-header">
+          <span id="result-emoji" class="result-emoji"></span>
+          <h2 id="result-name" class="result-name"></h2>
+          <div id="result-stars" class="result-stars"></div>
+        </div>
+
+        <p id="result-description" class="result-description"></p>
+
+        <div class="result-details">
+          <div class="detail-item">
+            <span class="detail-icon">💼</span>
+            <span class="detail-label">工作</span>
+            <p id="detail-work" class="detail-text"></p>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">📚</span>
+            <span class="detail-label">學業</span>
+            <p id="detail-study" class="detail-text"></p>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">❤️</span>
+            <span class="detail-label">愛情</span>
+            <p id="detail-love" class="detail-text"></p>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">💰</span>
+            <span class="detail-label">金錢</span>
+            <p id="detail-money" class="detail-text"></p>
+          </div>
+        </div>
+
+        <div class="result-quote">
+          <span class="quote-mark">「</span>
+          <span id="result-quote-text"></span>
+          <span class="quote-mark">」</span>
+        </div>
+
+        <div class="lucky-info">
+          <span class="lucky-item">🎨 幸運色：<strong id="lucky-color"></strong></span>
+          <span class="lucky-item">🔢 幸運數字：<strong id="lucky-number"></strong></span>
+        </div>
+
+        <button id="retry-btn" class="btn-retry" aria-label="再占卜一次">
+          <span>🔄</span> 再占卜一次
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="footer">
+    <p>✨ 占卜結果僅供娛樂參考 ✨</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
