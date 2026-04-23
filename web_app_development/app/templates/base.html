@@ -4,34 +4,174 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}線上算命系統{% endblock %}</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts 中文字型 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block extra_css %}{% endblock %}
+    <style>
+        :root {
+            --primary-red: #8B0000;
+            --gold: #DAA520;
+            --dark-bg: #1a1a2e;
+            --dark-card: #16213e;
+            --text-gold: #FFD700;
+        }
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e) !important;
+            border-bottom: 2px solid var(--gold);
+        }
+        .navbar-brand {
+            color: var(--text-gold) !important;
+            font-weight: 900;
+            font-size: 1.4rem;
+        }
+        .nav-link { color: #ccc !important; }
+        .nav-link:hover { color: var(--text-gold) !important; }
+        .nav-link.active { color: var(--text-gold) !important; font-weight: bold; }
+        .card {
+            background: var(--dark-card);
+            border: 1px solid rgba(218,165,32,0.3);
+            border-radius: 12px;
+        }
+        .btn-fortune {
+            background: linear-gradient(135deg, var(--primary-red), #c0392b);
+            color: #fff;
+            border: none;
+            font-weight: bold;
+            padding: 10px 28px;
+            border-radius: 8px;
+        }
+        .btn-fortune:hover {
+            background: linear-gradient(135deg, #a00000, #e74c3c);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139,0,0,0.4);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #b8860b);
+            color: #1a1a2e;
+            border: none;
+            font-weight: bold;
+        }
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #FFD700, #DAA520);
+            color: #1a1a2e;
+        }
+        footer {
+            border-top: 1px solid rgba(218,165,32,0.3);
+            padding: 20px 0;
+            margin-top: 60px;
+            color: #888;
+            text-align: center;
+        }
+        .text-gold { color: var(--text-gold) !important; }
+        .border-gold { border-color: var(--gold) !important; }
+    </style>
 </head>
 <body>
     <!-- 導覽列 -->
-    <nav>
-        <!-- TODO: 實作導覽列（首頁、抽籤、塔羅、每日運勢、捐獻、登入/登出） -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <i class="bi bi-stars"></i> 線上算命系統
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('draw.index') }}">
+                            <i class="bi bi-bookmark-star"></i> 抽籤求籤
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('tarot.index') }}">
+                            <i class="bi bi-suit-diamond"></i> 塔羅占卜
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.daily_fortune') }}">
+                            <i class="bi bi-sun"></i> 每日運勢
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('donate.index') }}">
+                            <i class="bi bi-heart"></i> 捐香油錢
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if session.get('user_id') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('history.index') }}">
+                            <i class="bi bi-clock-history"></i> 歷史紀錄
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.profile') }}">
+                            <i class="bi bi-person-circle"></i> {{ session.get('username') }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                            <i class="bi bi-box-arrow-right"></i> 登出
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login_page') }}">
+                            <i class="bi bi-box-arrow-in-right"></i> 登入
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.register_page') }}">
+                            <i class="bi bi-person-plus"></i> 註冊
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
     </nav>
 
     <!-- Flash 訊息 -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="flash-message flash-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
 
     <!-- 主要內容 -->
-    <main>
+    <main class="container py-4">
         {% block content %}{% endblock %}
     </main>
 
     <!-- 頁尾 -->
     <footer>
-        <!-- TODO: 實作頁尾 -->
+        <div class="container">
+            <p class="mb-0">🔮 線上算命系統 &copy; 2026 — 僅供娛樂參考</p>
+        </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>

@@ -3,8 +3,76 @@
 {% block title %}籤詩結果 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 籤詩結果頁：顯示籤等級、籤題、籤詩原文、白話文解釋 -->
-<!-- 變數：fortune（算命紀錄，含 poem_level, poem_title, poem_text, interpretation） -->
-<!-- 按鈕：再抽一次、分享、儲存（已登入時） -->
-<!-- TODO: 實作籤詩結果顯示 -->
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card p-4 text-center">
+            <!-- 籤等級 -->
+            <div class="mb-3">
+                <span class="badge fs-4 px-4 py-2"
+                      style="background: linear-gradient(135deg, var(--primary-red), #c0392b);">
+                    {{ fortune.poem_level }}
+                </span>
+            </div>
+
+            <!-- 籤題 -->
+            <h2 class="text-gold mb-3">{{ fortune.poem_title }}</h2>
+
+            <!-- 類別與問題 -->
+            <p class="text-muted">
+                <i class="bi bi-tag"></i> {{ fortune.category }}
+                {% if fortune.question %}
+                 · <i class="bi bi-chat-dots"></i> {{ fortune.question }}
+                {% endif %}
+            </p>
+
+            <hr style="border-color: rgba(218,165,32,0.3);">
+
+            <!-- 籤詩原文 -->
+            <div class="mb-4">
+                <h5 class="text-gold mb-2">📜 籤詩</h5>
+                <p class="fs-5" style="line-height: 2; white-space: pre-line;">{{ fortune.poem_text }}</p>
+            </div>
+
+            <!-- 白話文解釋 -->
+            <div class="mb-4 p-3 rounded" style="background: rgba(218,165,32,0.1);">
+                <h5 class="text-gold mb-2">💡 解說</h5>
+                <p class="mb-0" style="line-height: 1.8;">{{ fortune.interpretation }}</p>
+            </div>
+
+            <hr style="border-color: rgba(218,165,32,0.3);">
+
+            <!-- 操作按鈕 -->
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{{ url_for('draw.index') }}" class="btn btn-fortune">
+                    🔄 再抽一次
+                </a>
+                {% if fortune.share_token %}
+                <button class="btn btn-gold" onclick="copyShareLink('{{ url_for('share.result', token=fortune.share_token, _external=True) }}')">
+                    <i class="bi bi-share"></i> 分享結果
+                </button>
+                {% endif %}
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-light">
+                    <i class="bi bi-house"></i> 回首頁
+                </a>
+            </div>
+        </div>
+
+        <!-- 時間 -->
+        <p class="text-center text-muted mt-3 small">
+            <i class="bi bi-clock"></i> {{ fortune.created_at }}
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyShareLink(url) {
+    navigator.clipboard.writeText(url).then(function() {
+        alert('分享連結已複製到剪貼簿！');
+    }).catch(function() {
+        prompt('請複製以下連結：', url);
+    });
+}
+</script>
 {% endblock %}

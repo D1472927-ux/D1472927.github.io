@@ -25,14 +25,21 @@ def get_connection():
 
     Returns:
         sqlite3.Connection: 資料庫連線物件
+
+    Raises:
+        sqlite3.Error: 若無法建立連線
     """
     # 確保 instance 資料夾存在
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row  # 讓結果可以用欄位名稱存取
-    conn.execute('PRAGMA foreign_keys = ON')  # 啟用外部鍵
-    return conn
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row  # 讓結果可以用欄位名稱存取
+        conn.execute('PRAGMA foreign_keys = ON')  # 啟用外部鍵
+        return conn
+    except sqlite3.Error as e:
+        print(f'[ERROR] DB connection failed: {e}')
+        raise
 
 
 def init_db():
@@ -46,7 +53,11 @@ def init_db():
         with open(SCHEMA_PATH, 'r', encoding='utf-8') as f:
             conn.executescript(f.read())
         conn.commit()
-        print('✅ 資料庫初始化完成')
+        print('[OK] Database initialized.')
+    except FileNotFoundError:
+        print(f'[ERROR] schema.sql not found: {SCHEMA_PATH}')
+    except sqlite3.Error as e:
+        print(f'[ERROR] Database init failed: {e}')
     finally:
         conn.close()
 
@@ -58,7 +69,7 @@ def seed_db():
     僅在資料表為空時才匯入（避免重複匯入）。
     """
     if not os.path.exists(SEED_PATH):
-        print('⚠️ seed.sql 尚未建立，跳過種子資料匯入')
+        print('[WARN] seed.sql not found, skipping seed data.')
         return
 
     conn = get_connection()
@@ -66,13 +77,17 @@ def seed_db():
         # 檢查是否已有資料
         poem_count = conn.execute('SELECT COUNT(*) FROM poems').fetchone()[0]
         if poem_count > 0:
-            print('ℹ️ 資料庫已有資料，跳過種子資料匯入')
+            print('[INFO] Database already has data, skipping seed.')
             return
 
         with open(SEED_PATH, 'r', encoding='utf-8') as f:
             conn.executescript(f.read())
         conn.commit()
-        print('✅ 種子資料匯入完成')
+        print('[OK] Seed data imported.')
+    except sqlite3.Error as e:
+        print(f'[ERROR] Seed data import failed: {e}')
+    except FileNotFoundError:
+        print(f'[ERROR] seed.sql not found: {SEED_PATH}')
     finally:
         conn.close()
 
@@ -85,4 +100,7 @@ def close_connection(conn):
         conn (sqlite3.Connection): 要關閉的連線物件
     """
     if conn:
-        conn.close()
+        try:
+            conn.close()
+        except sqlite3.Error as e:
+            print(f'[WARN] Error closing connection: {e}')

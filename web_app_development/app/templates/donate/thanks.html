@@ -3,7 +3,45 @@
 {% block title %}感謝捐獻 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 捐獻感謝頁：顯示感謝訊息與捐獻摘要 -->
-<!-- 變數：donation（含 amount, wish, is_anonymous, created_at） -->
-<!-- TODO: 實作感謝頁面 -->
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-5 text-center">
+            <div class="display-1 mb-3">🙏</div>
+            <h2 class="text-gold mb-3">感謝您的捐獻！</h2>
+            <p class="text-muted mb-4">您的善心將帶來好運與祝福</p>
+
+            <div class="p-3 rounded mb-4" style="background: rgba(218,165,32,0.1);">
+                <div class="row">
+                    <div class="col-6 text-end text-muted">捐獻金額：</div>
+                    <div class="col-6 text-start text-gold fw-bold fs-5">NT$ {{ donation.amount }}</div>
+                </div>
+                {% if donation.wish %}
+                <div class="row mt-2">
+                    <div class="col-6 text-end text-muted">祈願內容：</div>
+                    <div class="col-6 text-start">{{ donation.wish }}</div>
+                </div>
+                {% endif %}
+                <div class="row mt-2">
+                    <div class="col-6 text-end text-muted">捐獻方式：</div>
+                    <div class="col-6 text-start">
+                        {% if donation.is_anonymous %}匿名捐獻{% else %}具名捐獻{% endif %}
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-6 text-end text-muted">捐獻時間：</div>
+                    <div class="col-6 text-start small">{{ donation.created_at }}</div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ url_for('donate.history') }}" class="btn btn-gold">
+                    <i class="bi bi-list-check"></i> 查看捐獻紀錄
+                </a>
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-light">
+                    <i class="bi bi-house"></i> 回首頁
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

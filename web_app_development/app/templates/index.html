@@ -3,6 +3,99 @@
 {% block title %}首頁 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 首頁：系統入口，展示功能選單與今日運勢摘要 -->
-<!-- TODO: 實作首頁內容 -->
+<!-- 主視覺區域 -->
+<div class="text-center py-5">
+    <h1 class="display-4 text-gold mb-3">🔮 線上算命系統</h1>
+    <p class="lead" style="color: #aaa;">隨時隨地，問卜求籤，探索命運的奧秘</p>
+</div>
+
+<!-- 功能卡片區 -->
+<div class="row g-4 mb-5">
+    <!-- 抽籤求籤 -->
+    <div class="col-md-4">
+        <div class="card h-100 text-center p-4">
+            <div class="card-body">
+                <div class="display-3 mb-3">🎋</div>
+                <h3 class="text-gold">抽籤求籤</h3>
+                <p class="text-muted">選擇類別，誠心問卜，系統為您隨機抽取一支靈籤</p>
+                <a href="{{ url_for('draw.index') }}" class="btn btn-fortune mt-2">
+                    <i class="bi bi-bookmark-star"></i> 開始抽籤
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 塔羅占卜 -->
+    <div class="col-md-4">
+        <div class="card h-100 text-center p-4">
+            <div class="card-body">
+                <div class="display-3 mb-3">🃏</div>
+                <h3 class="text-gold">塔羅占卜</h3>
+                <p class="text-muted">選擇主題，翻開命運之牌，聆聽宇宙的指引</p>
+                <a href="{{ url_for('tarot.index') }}" class="btn btn-fortune mt-2">
+                    <i class="bi bi-suit-diamond"></i> 開始占卜
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 每日運勢 -->
+    <div class="col-md-4">
+        <div class="card h-100 text-center p-4">
+            <div class="card-body">
+                <div class="display-3 mb-3">☀️</div>
+                <h3 class="text-gold">每日運勢</h3>
+                <p class="text-muted">查看今日運勢，掌握一天的吉凶方向</p>
+                <a href="{{ url_for('main.daily_fortune') }}" class="btn btn-fortune mt-2">
+                    <i class="bi bi-sun"></i> 查看運勢
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 今日運勢摘要 -->
+{% if daily_summary %}
+<div class="card p-4 mb-4">
+    <h4 class="text-gold text-center mb-3">✨ 今日運勢速覽 — {{ daily_summary.date }}</h4>
+    <div class="row text-center">
+        <div class="col-3">
+            <small class="text-muted">整體運勢</small><br>
+            <span class="text-gold fs-5">{{ '⭐' * daily_summary.overall }}</span>
+        </div>
+        <div class="col-3">
+            <small class="text-muted">愛情運</small><br>
+            <span class="text-gold fs-5">{{ '⭐' * daily_summary.love }}</span>
+        </div>
+        <div class="col-3">
+            <small class="text-muted">事業運</small><br>
+            <span class="text-gold fs-5">{{ '⭐' * daily_summary.career }}</span>
+        </div>
+        <div class="col-3">
+            <small class="text-muted">財運</small><br>
+            <span class="text-gold fs-5">{{ '⭐' * daily_summary.money }}</span>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- 其他功能 -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card p-4 text-center">
+            <div class="display-4 mb-2">🙏</div>
+            <h5 class="text-gold">捐香油錢</h5>
+            <p class="text-muted small">表達對神明的敬意與感謝</p>
+            <a href="{{ url_for('donate.index') }}" class="btn btn-gold btn-sm">前往捐獻</a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-4 text-center">
+            <div class="display-4 mb-2">📜</div>
+            <h5 class="text-gold">歷史紀錄</h5>
+            <p class="text-muted small">回顧您的算命紀錄與結果</p>
+            <a href="{{ url_for('history.index') }}" class="btn btn-gold btn-sm">查看紀錄</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

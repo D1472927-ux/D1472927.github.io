@@ -3,8 +3,74 @@
 {% block title %}捐獻香油錢 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 捐獻頁：選擇金額、填寫祈願、選擇具名/匿名 -->
-<!-- 表單欄位：amount（radio: 100/300/500/1000）, custom_amount（text，選填）, wish（textarea，選填）, is_anonymous（checkbox） -->
-<!-- 表單 action: POST /donate -->
-<!-- TODO: 實作捐獻表單 -->
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <div class="text-center mb-4">
+                <div class="display-3 mb-2">🙏</div>
+                <h2 class="text-gold">捐獻香油錢</h2>
+                <p class="text-muted">表達您對神明的敬意與感謝</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('donate.donate') }}">
+                <!-- 金額選擇 -->
+                <div class="mb-3">
+                    <label class="form-label">選擇捐獻金額 <span class="text-danger">*</span></label>
+                    <div class="row g-2">
+                        {% for amt in default_amounts %}
+                        <div class="col-3">
+                            <input type="radio" class="btn-check" name="amount"
+                                   id="amount_{{ amt }}" value="{{ amt }}"
+                                   {% if loop.first %}checked{% endif %}>
+                            <label class="btn btn-outline-warning w-100" for="amount_{{ amt }}">
+                                ${{ amt }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 自訂金額 -->
+                <div class="mb-3">
+                    <label for="custom_amount" class="form-label">或自訂金額</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark text-gold border-secondary">NT$</span>
+                        <input type="number" class="form-control bg-dark text-light border-secondary"
+                               id="custom_amount" name="custom_amount" min="1" placeholder="輸入自訂金額">
+                    </div>
+                    <small class="text-muted">填寫自訂金額將覆蓋上方選擇</small>
+                </div>
+
+                <!-- 祈願內容 -->
+                <div class="mb-3">
+                    <label for="wish" class="form-label">祈願內容（選填）</label>
+                    <textarea class="form-control bg-dark text-light border-secondary"
+                              id="wish" name="wish" rows="3"
+                              placeholder="例如：祈求家人平安健康"></textarea>
+                </div>
+
+                <!-- 匿名選項 -->
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox"
+                               id="is_anonymous" name="is_anonymous" value="1">
+                        <label class="form-check-label" for="is_anonymous">
+                            匿名捐獻
+                        </label>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-fortune btn-lg">
+                        🙏 確認捐獻
+                    </button>
+                </div>
+            </form>
+
+            <p class="text-muted text-center mt-3 small">
+                ⚠️ 此為模擬捐獻，不會實際扣款
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}

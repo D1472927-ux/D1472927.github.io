@@ -3,10 +3,87 @@
 {% block title %}歷史紀錄 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 歷史紀錄頁：以時間軸方式呈現算命紀錄，支援篩選 -->
-<!-- 篩選：type（draw/tarot）, date（起始日期） -->
-<!-- 變數：records（紀錄清單）, filters（當前篩選條件） -->
-<!-- 每筆紀錄顯示：類型、類別、結果摘要、時間、刪除按鈕 -->
-<!-- 刪除 action: POST /history/delete/<id> -->
-<!-- TODO: 實作歷史紀錄列表與篩選功能 -->
+<h2 class="text-gold mb-4"><i class="bi bi-clock-history"></i> 歷史紀錄</h2>
+
+<!-- 篩選區 -->
+<div class="card p-3 mb-4">
+    <form method="GET" action="{{ url_for('history.index') }}" class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label for="type" class="form-label small">類型篩選</label>
+            <select class="form-select form-select-sm bg-dark text-light border-secondary" id="type" name="type">
+                <option value="">全部</option>
+                <option value="draw" {% if type_filter == 'draw' %}selected{% endif %}>🎋 抽籤</option>
+                <option value="tarot" {% if type_filter == 'tarot' %}selected{% endif %}>🃏 塔羅</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="date" class="form-label small">起始日期</label>
+            <input type="date" class="form-control form-control-sm bg-dark text-light border-secondary"
+                   id="date" name="date" value="{{ date_from or '' }}">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-gold btn-sm w-100">
+                <i class="bi bi-filter"></i> 篩選
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- 紀錄列表 -->
+{% if records %}
+<div class="table-responsive">
+    <table class="table table-dark table-hover">
+        <thead>
+            <tr>
+                <th>類型</th>
+                <th>類別</th>
+                <th>結果摘要</th>
+                <th>時間</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>
+                    {% if record.type == 'draw' %}
+                    <span class="badge bg-success">🎋 抽籤</span>
+                    {% else %}
+                    <span class="badge bg-primary">🃏 塔羅</span>
+                    {% endif %}
+                </td>
+                <td>{{ record.category or '-' }}</td>
+                <td>
+                    {% if record.type == 'draw' %}
+                    <a href="{{ url_for('draw.result', id=record.id) }}" class="text-gold text-decoration-none">
+                        {{ record.result_summary or record.poem_level or '-' }}
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('tarot.result', id=record.id) }}" class="text-gold text-decoration-none">
+                        {{ record.result_summary or '-' }}
+                    </a>
+                    {% endif %}
+                </td>
+                <td><small class="text-muted">{{ record.created_at }}</small></td>
+                <td>
+                    <form method="POST" action="{{ url_for('history.delete', id=record.id) }}"
+                          onsubmit="return confirm('確定要刪除這筆紀錄嗎？');" style="display:inline;">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<p class="text-muted text-center small">共 {{ records|length }} 筆紀錄</p>
+{% else %}
+<div class="text-center py-5">
+    <div class="display-4 mb-3">📭</div>
+    <p class="text-muted">目前沒有紀錄</p>
+    <a href="{{ url_for('draw.index') }}" class="btn btn-fortune">去抽籤看看</a>
+</div>
+{% endif %}
 {% endblock %}

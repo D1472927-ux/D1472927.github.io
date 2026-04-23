@@ -3,8 +3,74 @@
 {% block title %}塔羅結果 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 塔羅結果頁：顯示抽到的牌、正/逆位、牌義解讀、綜合建議 -->
-<!-- 變數：fortune（算命紀錄）, cards（牌列表，每張含 card, is_reversed, meaning, description） -->
-<!-- 按鈕：再占一次、分享 -->
-<!-- TODO: 實作塔羅結果顯示 -->
+<div class="text-center mb-4">
+    <h2 class="text-gold"><i class="bi bi-suit-diamond"></i> 塔羅占卜結果</h2>
+    <p class="text-muted">主題：{{ fortune.category }}</p>
+</div>
+
+<!-- 牌陣展示 -->
+<div class="row justify-content-center g-4 mb-4">
+    {% for item in cards %}
+    <div class="col-md-4">
+        <div class="card p-4 text-center h-100">
+            <!-- 位置標題 -->
+            <div class="mb-2">
+                <span class="badge bg-secondary px-3 py-1">{{ item.position }}</span>
+            </div>
+
+            <!-- 牌名 -->
+            <h4 class="text-gold mb-2">{{ item.card.name }}</h4>
+
+            <!-- 正位/逆位 -->
+            <p>
+                {% if item.is_reversed %}
+                <span class="badge bg-danger"><i class="bi bi-arrow-down"></i> 逆位</span>
+                {% else %}
+                <span class="badge bg-success"><i class="bi bi-arrow-up"></i> 正位</span>
+                {% endif %}
+            </p>
+
+            <!-- 關鍵字 -->
+            <p class="text-gold fw-bold">{{ item.meaning }}</p>
+
+            <!-- 詳細解讀 -->
+            <p class="text-muted small" style="line-height: 1.7;">{{ item.description }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<hr style="border-color: rgba(218,165,32,0.3);">
+
+<!-- 操作按鈕 -->
+<div class="text-center">
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="{{ url_for('tarot.index') }}" class="btn btn-fortune">
+            🔄 再占一次
+        </a>
+        {% if fortune.share_token %}
+        <button class="btn btn-gold" onclick="copyShareLink('{{ url_for('share.result', token=fortune.share_token, _external=True) }}')">
+            <i class="bi bi-share"></i> 分享結果
+        </button>
+        {% endif %}
+        <a href="{{ url_for('main.index') }}" class="btn btn-outline-light">
+            <i class="bi bi-house"></i> 回首頁
+        </a>
+    </div>
+    <p class="text-muted mt-3 small">
+        <i class="bi bi-clock"></i> {{ fortune.created_at }}
+    </p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyShareLink(url) {
+    navigator.clipboard.writeText(url).then(function() {
+        alert('分享連結已複製到剪貼簿！');
+    }).catch(function() {
+        prompt('請複製以下連結：', url);
+    });
+}
+</script>
 {% endblock %}

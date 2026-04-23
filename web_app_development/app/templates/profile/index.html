@@ -3,7 +3,39 @@
 {% block title %}個人中心 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 個人中心頁：顯示個人資訊與統計數據 -->
-<!-- 變數：user（含 username, created_at）, stats（含 fortune_count, donation_total） -->
-<!-- TODO: 實作個人中心 -->
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4 text-center">
+            <div class="display-3 mb-3">👤</div>
+            <h2 class="text-gold mb-1">{{ user.username }}</h2>
+            <p class="text-muted small mb-4">加入時間：{{ user.created_at }}</p>
+
+            <!-- 統計數據 -->
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="p-3 rounded" style="background: rgba(218,165,32,0.1);">
+                        <div class="display-6 text-gold">{{ stats.fortune_count }}</div>
+                        <small class="text-muted">算命次數</small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 rounded" style="background: rgba(218,165,32,0.1);">
+                        <div class="display-6 text-gold">{{ stats.donation_total }}</div>
+                        <small class="text-muted">捐獻總額 (NT$)</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速連結 -->
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('history.index') }}" class="btn btn-outline-light">
+                    <i class="bi bi-clock-history"></i> 查看算命紀錄
+                </a>
+                <a href="{{ url_for('donate.history') }}" class="btn btn-outline-light">
+                    <i class="bi bi-heart"></i> 查看捐獻紀錄
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

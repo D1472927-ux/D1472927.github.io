@@ -3,7 +3,61 @@
 {% block title %}每日運勢 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 每日運勢頁：顯示整體運勢、愛情運、事業運、財運（各 1~5 星） -->
-<!-- 變數：fortune（含 overall, love, career, money 星數, lucky_color, lucky_number） -->
-<!-- TODO: 實作每日運勢顯示 -->
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card p-4 text-center">
+            <div class="display-3 mb-2">☀️</div>
+            <h2 class="text-gold mb-1">每日運勢</h2>
+            <p class="text-muted mb-4">{{ fortune.date }}</p>
+
+            <!-- 運勢星等 -->
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="p-3 rounded" style="background: rgba(218,165,32,0.1);">
+                        <h6 class="text-muted mb-1">🌟 整體運勢</h6>
+                        <span class="text-gold fs-4">{{ '⭐' * fortune.overall }}{{ '☆' * (5 - fortune.overall) }}</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 rounded" style="background: rgba(218,165,32,0.1);">
+                        <h6 class="text-muted mb-1">💕 愛情運</h6>
+                        <span class="text-gold fs-4">{{ '⭐' * fortune.love }}{{ '☆' * (5 - fortune.love) }}</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 rounded" style="background: rgba(218,165,32,0.1);">
+                        <h6 class="text-muted mb-1">💼 事業運</h6>
+                        <span class="text-gold fs-4">{{ '⭐' * fortune.career }}{{ '☆' * (5 - fortune.career) }}</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 rounded" style="background: rgba(218,165,32,0.1);">
+                        <h6 class="text-muted mb-1">💰 財運</h6>
+                        <span class="text-gold fs-4">{{ '⭐' * fortune.money }}{{ '☆' * (5 - fortune.money) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 幸運指標 -->
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="p-3 rounded border border-gold">
+                        <h6 class="text-muted mb-1">🎨 幸運色</h6>
+                        <span class="text-gold fs-5 fw-bold">{{ fortune.lucky_color }}</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 rounded border border-gold">
+                        <h6 class="text-muted mb-1">🔢 幸運數字</h6>
+                        <span class="text-gold fs-5 fw-bold">{{ fortune.lucky_number }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline-light">
+                <i class="bi bi-house"></i> 回首頁
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -3,9 +3,41 @@
 {% block title %}抽籤求籤 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 抽籤頁：選擇類別（事業/感情/學業/健康/財運）、輸入問題（選填） -->
-<!-- 表單欄位：category（select）, question（textarea，選填） -->
-<!-- 表單 action: POST /draw -->
-<!-- 變數：categories（類別清單） -->
-<!-- TODO: 實作抽籤介面 -->
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <div class="text-center mb-4">
+                <div class="display-3 mb-2">🎋</div>
+                <h2 class="text-gold">抽籤求籤</h2>
+                <p class="text-muted">誠心問卜，選擇類別後點擊「抽籤」</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('draw.draw') }}">
+                <div class="mb-3">
+                    <label for="category" class="form-label">詢問類別 <span class="text-danger">*</span></label>
+                    <select class="form-select bg-dark text-light border-secondary"
+                            id="category" name="category" required>
+                        <option value="" disabled selected>— 請選擇類別 —</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}">{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="question" class="form-label">您的問題（選填）</label>
+                    <textarea class="form-control bg-dark text-light border-secondary"
+                              id="question" name="question" rows="3"
+                              placeholder="例如：我最近的工作運勢如何？"></textarea>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-fortune btn-lg">
+                        🙏 誠心抽籤
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

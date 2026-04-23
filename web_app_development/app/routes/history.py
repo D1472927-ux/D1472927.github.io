@@ -11,48 +11,63 @@ URL Prefix: /history
 所有路由皆需登入。
 """
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, abort
+from app.models import fortune
+from app.routes.utils import login_required
 
 history_bp = Blueprint('history', __name__, url_prefix='/history')
 
 
 @history_bp.route('/')
+@login_required
 def index():
     """
     歷史紀錄列表（需登入）
 
-    Query 參數：
-    - type（選填）：篩選類型（draw / tarot）
-    - date（選填）：篩選起始日期（ISO 格式）
-
-    處理邏輯：
-    1. 從 session 取得 user_id
-    2. 呼叫 fortune.get_by_user(user_id, type_filter, date_from) 取得紀錄
-    渲染 history/index.html，傳遞 records 與篩選條件
-    未登入 → 重導向至 /login
+    支援依類型（draw/tarot）和日期篩選。
     """
-    # TODO: 檢查登入狀態
-    # TODO: 取得篩選參數
-    # TODO: 呼叫 Model 取得紀錄
-    # TODO: 渲染 history/index.html
-    pass
+    user_id = session['user_id']
+
+    # 取得篩選參數
+    type_filter = request.args.get('type', '').strip() or None
+    date_from = request.args.get('date', '').strip() or None
+
+    # 驗證篩選參數
+    if type_filter and type_filter not in ('draw', 'tarot'):
+        type_filter = None
+
+    # 查詢紀錄
+    records = fortune.get_by_user(user_id, type_filter=type_filter, date_from=date_from)
+
+    return render_template('history/index.html',
+                           records=records,
+                           type_filter=type_filter,
+                           date_from=date_from)
 
 
 @history_bp.route('/delete/<int:id>', methods=['POST'])
+@login_required
 def delete(id):
     """
     刪除紀錄（需登入）
 
-    URL 參數：id（fortune ID）
-    處理邏輯：
-    1. 驗證該紀錄屬於當前使用者
-    2. 呼叫 fortune.delete(id) 刪除
-    重導向至 /history，顯示 flash 訊息
-    403：非本人紀錄
-    404：紀錄不存在
+    驗證該紀錄屬於當前使用者後才允許刪除。
     """
-    # TODO: 檢查登入狀態
-    # TODO: 驗證紀錄擁有者
-    # TODO: 呼叫 Model 刪除
-    # TODO: 重導向至歷史紀錄頁
-    pass
+    user_id = session['user_id']
+
+    # 取得紀錄並驗證擁有者
+    record = fortune.get_by_id(id)
+    if not record:
+        abort(404)
+
+    if record['user_id'] != user_id:
+        flash('您無權刪除此紀錄', 'danger')
+        return redirect(url_for('history.index'))
+
+    # 刪除紀錄
+    if fortune.delete(id):
+        flash('紀錄已刪除', 'success')
+    else:
+        flash('刪除失敗，請稍後再試', 'danger')
+
+    return redirect(url_for('history.index'))

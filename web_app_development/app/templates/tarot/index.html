@@ -3,8 +3,43 @@
 {% block title %}塔羅占卜 — 線上算命系統{% endblock %}
 
 {% block content %}
-<!-- 塔羅占卜頁：選擇主題與牌陣類型 -->
-<!-- 表單欄位：topic（今日運勢/感情問題/工作抉擇）, spread（single/three） -->
-<!-- 表單 action: POST /tarot -->
-<!-- TODO: 實作塔羅占卜介面 -->
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <div class="text-center mb-4">
+                <div class="display-3 mb-2">🃏</div>
+                <h2 class="text-gold">塔羅占卜</h2>
+                <p class="text-muted">選擇占卜主題，讓命運之牌為您指引方向</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('tarot.divine') }}">
+                <div class="mb-4">
+                    <label class="form-label">選擇占卜主題 <span class="text-danger">*</span></label>
+                    {% for topic in topics %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="topic"
+                               id="topic_{{ loop.index }}" value="{{ topic }}"
+                               {% if loop.first %}checked{% endif %}>
+                        <label class="form-check-label" for="topic_{{ loop.index }}">
+                            {% if topic == '今日運勢' %}☀️{% elif topic == '感情問題' %}💕{% else %}💼{% endif %}
+                            {{ topic }}
+                            {% if topic == '今日運勢' %}
+                                <small class="text-muted">（單牌占卜）</small>
+                            {% else %}
+                                <small class="text-muted">（三牌占卜）</small>
+                            {% endif %}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-fortune btn-lg">
+                        🔮 開始占卜
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

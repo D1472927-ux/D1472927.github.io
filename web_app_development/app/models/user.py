@@ -9,6 +9,7 @@ user.py — 使用者資料模型
 - 所有 SQL 查詢使用參數化語法（? 佔位符），防止 SQL Injection
 """
 
+import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models.db import get_connection
 
@@ -23,9 +24,7 @@ def create(username, password):
 
     Returns:
         int: 新建立的使用者 ID
-
-    Raises:
-        sqlite3.IntegrityError: 若 username 已存在
+        None: 若建立失敗（如帳號已存在）
     """
     password_hash = generate_password_hash(password)
     conn = get_connection()
@@ -36,6 +35,12 @@ def create(username, password):
         )
         conn.commit()
         return cursor.lastrowid
+    except sqlite3.IntegrityError:
+        print(f'[WARN] Username "{username}" already exists')
+        return None
+    except sqlite3.Error as e:
+        print(f'[ERROR] Create user failed: {e}')
+        return None
     finally:
         conn.close()
 
@@ -45,7 +50,7 @@ def get_all():
     取得所有使用者（不含密碼雜湊）。
 
     Returns:
-        list[dict]: 使用者清單
+        list[dict]: 使用者清單，失敗時回傳空清單
     """
     conn = get_connection()
     try:
@@ -53,6 +58,9 @@ def get_all():
             'SELECT id, username, created_at FROM users ORDER BY id'
         ).fetchall()
         return [dict(row) for row in rows]
+    except sqlite3.Error as e:
+        print(f'[ERROR] Query users failed: {e}')
+        return []
     finally:
         conn.close()
 
@@ -65,7 +73,7 @@ def get_by_id(user_id):
         user_id (int): 使用者 ID
 
     Returns:
-        dict or None: 使用者資料（不含密碼雜湊），若不存在回傳 None
+        dict or None: 使用者資料（不含密碼雜湊），若不存在或失敗回傳 None
     """
     conn = get_connection()
     try:
@@ -74,6 +82,9 @@ def get_by_id(user_id):
             (user_id,)
         ).fetchone()
         return dict(row) if row else None
+    except sqlite3.Error as e:
+        print(f'[ERROR] Query user ID={user_id} failed: {e}')
+        return None
     finally:
         conn.close()
 
@@ -86,7 +97,7 @@ def get_by_username(username):
         username (str): 使用者帳號
 
     Returns:
-        dict or None: 使用者完整資料，若不存在回傳 None
+        dict or None: 使用者完整資料，若不存在或失敗回傳 None
     """
     conn = get_connection()
     try:
@@ -95,6 +106,9 @@ def get_by_username(username):
             (username,)
         ).fetchone()
         return dict(row) if row else None
+    except sqlite3.Error as e:
+        print(f'[ERROR] Query user "{username}" failed: {e}')
+        return None
     finally:
         conn.close()
 
@@ -110,14 +124,18 @@ def verify_password(username, password):
     Returns:
         dict or None: 驗證成功回傳使用者資料（不含密碼），失敗回傳 None
     """
-    user = get_by_username(username)
-    if user and check_password_hash(user['password_hash'], password):
-        return {
-            'id': user['id'],
-            'username': user['username'],
-            'created_at': user['created_at']
-        }
-    return None
+    try:
+        user = get_by_username(username)
+        if user and check_password_hash(user['password_hash'], password):
+            return {
+                'id': user['id'],
+                'username': user['username'],
+                'created_at': user['created_at']
+            }
+        return None
+    except Exception as e:
+        print(f'[ERROR] Verify password failed: {e}')
+        return None
 
 
 def update(user_id, username=None, password=None):
@@ -153,6 +171,12 @@ def update(user_id, username=None, password=None):
         cursor = conn.execute(sql, values)
         conn.commit()
         return cursor.rowcount > 0
+    except sqlite3.IntegrityError:
+        print('[WARN] Username already taken')
+        return False
+    except sqlite3.Error as e:
+        print(f'[ERROR] Update user ID={user_id} failed: {e}')
+        return False
     finally:
         conn.close()
 
@@ -172,6 +196,9 @@ def delete(user_id):
         cursor = conn.execute('DELETE FROM users WHERE id = ?', (user_id,))
         conn.commit()
         return cursor.rowcount > 0
+    except sqlite3.Error as e:
+        print(f'[ERROR] Delete user ID={user_id} failed: {e}')
+        return False
     finally:
         conn.close()
 
@@ -201,6 +228,12 @@ def get_stats(user_id):
         return {
             'fortune_count': fortune_count,
             'donation_total': donation_total
+        }
+    except sqlite3.Error as e:
+        print(f'[ERROR] Query user stats failed: {e}')
+        return {
+            'fortune_count': 0,
+            'donation_total': 0
         }
     finally:
         conn.close()
